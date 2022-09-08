@@ -39,7 +39,7 @@ jobs:
           cmake  -GNinja -DCMAKE_INSTALL_PREFIX=executable -DCMAKE_PREFIX_PATH=/usr/local -DQT_FEATURE_macdeployqt=ON  ..
           cmake --build . --target install
           cd ..
-          tar -cvf macdeployqt.tar build/executable/*
+          tar -cvf macdeployqt.tar -C build/executable .
           ls -alR build/executable
           pwd   
       - name: uploadRelease
