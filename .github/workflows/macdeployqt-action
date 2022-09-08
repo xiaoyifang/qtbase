@@ -1,0 +1,49 @@
+name: macdeployqt
+concurrency: 
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+on: 
+  # workflow_run:
+  #   workflows: [AutoTag]
+  #   types: [completed]
+  workflow_dispatch:
+  push:
+
+jobs:
+  build:
+    name: Build
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-11]
+
+    steps:
+      # macos 11.0 默认环境变了,要指定
+      - name: prepare env
+        if: ${{ matrix.os == 'macos-11' }}
+        run: |
+          softwareupdate --all --install --force
+          sudo xcode-select --print-path
+          sudo xcode-select --switch /Library/Developer/CommandLineTools    
+         
+      - name: build custom macdeployqt
+        run: |
+          brew install pcre2 harfbuzz freetype
+          brew install cmake ninja
+          git clone https://github.com/xiaoyifang/qtbase.git
+          cd qtbase
+          mkdir build
+          cd build
+          cmake -GNinja -DCMAKE_PREFIX_PATH=/usr/local -DQT_FEATURE_macdeployqt=ON  ..
+          cmake --build .
+          cd ..
+          tar -cvf macdeployqt.tar build/*
+          ls -alR build/
+          pwd   
+      - name: uploadRelease
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: qtbase/macdeployqt.tar
+          prerelease: true
+       
