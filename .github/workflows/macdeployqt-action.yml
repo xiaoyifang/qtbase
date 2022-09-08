@@ -47,5 +47,7 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: qtbase/macdeployqt.tar
+          tag: ${{ github.ref }}
+          overwrite: true
           prerelease: true
        
