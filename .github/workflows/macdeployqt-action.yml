@@ -33,12 +33,14 @@ jobs:
           git clone https://github.com/xiaoyifang/qtbase.git
           cd qtbase
           mkdir build
+          
           cd build
-          cmake -GNinja -DCMAKE_PREFIX_PATH=/usr/local -DQT_FEATURE_macdeployqt=ON  ..
-          cmake --build .
+          mkdir executable
+          cmake  -GNinja -DCMAKE_INSTALL_PREFIX=executable -DCMAKE_PREFIX_PATH=/usr/local -DQT_FEATURE_macdeployqt=ON  ..
+          cmake --build . --target install
           cd ..
-          tar -cvf macdeployqt.tar build/*
-          ls -alR build/
+          tar -cvf macdeployqt.tar build/executable/*
+          ls -alR build/executable
           pwd   
       - name: uploadRelease
         uses: svenstaro/upload-release-action@v2
